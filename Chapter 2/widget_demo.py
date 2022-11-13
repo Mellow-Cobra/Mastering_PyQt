@@ -4,6 +4,26 @@ from PyQt5 import QtGui as qtg
 from PyQt5 import QtCore as qtc
 
 
+class IPv4Validator(qtg.QValidator):
+    """Enforce entry IPv4 Addresses"""
+
+    def validate(self, string, index):
+        """Validator Method"""
+        octets = string.split('.')
+        if len(octets) > 4:
+            state = qtg.QValidator.Invalid
+        elif not all([x.isdigit() for x in octets if x != '']):
+            state = qtg.QValidator.Invalid
+        elif not all ([0 <= int(x) <= 255 for x in octets if x != '']):
+            state = qtg.QValidator.Invalid
+        elif len(octets) < 4:
+            state = qtg.QValidator.Intermediate
+        elif any([x == '' for x in octets]):
+            state = qtg.QValidator.Intermediate
+        else:
+            state = qtg.QValidator.Acceptable
+        return (state, string, index)
+
 class MainWindow(qtw.QWidget):
     """ Main UI"""
     def __init__(self):
@@ -31,6 +51,8 @@ class MainWindow(qtw.QWidget):
             )
             line_edit.setMinimumSize(150, 15)
             line_edit.setMaximumSize(500, 50)
+            line_edit.setText('0.0.0.0')
+            line_edit.setValidator(IPv4Validator())
 
             # QPushButton
             button = qtw.QPushButton("Push Me", self,
