@@ -19,6 +19,7 @@ class MainWindow(qtw.QWidget):
 
             # QLabel
             label = qtw.QLabel('<b>Hello Widgets!</b>', self)
+            label.setFixedSize(150, 40)
 
             # QLine Widget
             line_edit = qtw.QLineEdit(
@@ -28,6 +29,8 @@ class MainWindow(qtw.QWidget):
                 clearButtonEnabled=True,
                 maxLength=20
             )
+            line_edit.setMinimumSize(150, 15)
+            line_edit.setMaximumSize(500, 50)
 
             # QPushButton
             button = qtw.QPushButton("Push Me", self,
@@ -55,6 +58,7 @@ class MainWindow(qtw.QWidget):
                 suffix=' + Tax',
                 singleStep=5
             )
+            spinbox.setSizePolicy(qtw.QSizePolicy.Fixed, qtw.QSizePolicy.Preferred)
 
             # QTextEdit
             textedit = qtw.QTextEdit(
@@ -62,6 +66,12 @@ class MainWindow(qtw.QWidget):
                 acceptRichText=False,
                 placeholderText='Enter your text here'
             )
+            textedit.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
+                                   qtw.QSizePolicy.MinimumExpanding)
+            textedit.sizeHint = lambda : qtc.QSize(500, 500)
+
+
+
 
             layout = qtw.QVBoxLayout()
             self.setLayout(layout)
@@ -84,13 +94,37 @@ class MainWindow(qtw.QWidget):
             form_layout = qtw.QFormLayout()
             layout.addLayout(form_layout)
 
+            stretch_layout = qtw.QHBoxLayout()
+            layout.addLayout(stretch_layout)
+            stretch_layout.addWidget(qtw.QLineEdit('Short'), 1)
+            stretch_layout.addWidget(qtw.QLineEdit('Long'), 2)
+
             form_layout.addRow('Item 1', qtw.QLineEdit(self))
             form_layout.addRow('Item 2', qtw.QLineEdit(self))
             form_layout.addRow(qtw.QLabel('<b>This is a label-only row</b>'))
 
+            tab_widget = qtw.QTabWidget()
+            layout.addWidget(tab_widget)
 
+            tab_widget = qtw.QTabWidget(
+                movable=True,
+                tabPosition=qtw.QTabWidget.West,
+                tabShape=qtw.QTabWidget.Triangular
+            )
+            layout.addWidget(tab_widget)
+            container = qtw.QWidget(self)
+            grid_layout = qtw.QGridLayout()
+            #layout.addLayout(grid_layout)
+            container.setLayout(grid_layout)
 
+            tab_widget.addTab(container, 'Tab the first')
+            tab_widget.addTab(subwidget, 'Tab the second')
 
+            groupbox = qtw.QGroupBox('Buttons')
+            groupbox.setLayout(qtw.QHBoxLayout())
+            groupbox.layout().addWidget(qtw.QPushButton('OK'))
+            groupbox.layout().addWidget(qtw.QPushButton('Cancel'))
+            layout.addWidget(groupbox)
 
             # End main UI code
             self.show()
