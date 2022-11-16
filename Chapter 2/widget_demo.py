@@ -14,7 +14,7 @@ class IPv4Validator(qtg.QValidator):
             state = qtg.QValidator.Invalid
         elif not all([x.isdigit() for x in octets if x != '']):
             state = qtg.QValidator.Invalid
-        elif not all ([0 <= int(x) <= 255 for x in octets if x != '']):
+        elif not all([0 <= int(x) <= 255 for x in octets if x != '']):
             state = qtg.QValidator.Invalid
         elif len(octets) < 4:
             state = qtg.QValidator.Intermediate
@@ -24,8 +24,39 @@ class IPv4Validator(qtg.QValidator):
             state = qtg.QValidator.Acceptable
         return (state, string, index)
 
+
+class ChoiceSpinBox(qtw.QSpinBox):
+    """A spinbox for selecting choices."""
+
+    def __init__(selfself, choices, *args, **kwargs):
+        """Spinbox"""
+        self.choices = choices
+        super().__init__(
+            *args,
+            maximum=len(self.choices) - 1,
+            minimum=0,
+            **kwargs
+        )
+
+    def textFromValue(self, value):
+        """Method for text from value"""
+        try:
+            return self.choices[value]
+        except IndexError:
+            return '!Error'
+
+    def validate(self, string, index):
+        if string in self.choices:
+            state = qtg.QValidator.Acceptable
+        elif any([v.startswith(string) for v in self.choices]):
+            state = qtg.QValidator.Intermediate
+        else:
+            state = qtg.QValidator.Invalid
+        return (state, string, index)
+
 class MainWindow(qtw.QWidget):
     """ Main UI"""
+
     def __init__(self):
         if __name__ == '__main__':
             """
@@ -90,10 +121,7 @@ class MainWindow(qtw.QWidget):
             )
             textedit.setSizePolicy(qtw.QSizePolicy.MinimumExpanding,
                                    qtw.QSizePolicy.MinimumExpanding)
-            textedit.sizeHint = lambda : qtc.QSize(500, 500)
-
-
-
+            textedit.sizeHint = lambda: qtc.QSize(500, 500)
 
             layout = qtw.QVBoxLayout()
             self.setLayout(layout)
@@ -136,7 +164,7 @@ class MainWindow(qtw.QWidget):
             layout.addWidget(tab_widget)
             container = qtw.QWidget(self)
             grid_layout = qtw.QGridLayout()
-            #layout.addLayout(grid_layout)
+            # layout.addLayout(grid_layout)
             container.setLayout(grid_layout)
 
             tab_widget.addTab(container, 'Tab the first')
@@ -158,4 +186,3 @@ if __name__ == '__main__':
     # if it goes out of scope, it will be destroyed.
     mw = MainWindow()
     sys.exit(app.exec())
-
